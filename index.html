@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hosting Static Website Using AWS CloudFront and S3</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Hosting Static Website Using AWS CloudFront and S3</h1>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#contact">Contact Us</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1>Introduction to Amazon CloudFront and S3 Integration</h1>
+        <p>
+            In the world of cloud computing, optimizing the delivery of web content is crucial for providing a seamless user experience. Amazon CloudFront, a content delivery network (CDN) service offered by AWS, plays a pivotal role in accelerating the distribution of static and dynamic web content. When integrated with Amazon S3, CloudFront ensures that your content is delivered quickly and reliably to users around the globe.
+        </p>
+        <p>
+            CloudFront works by caching copies of your web content at edge locations worldwide, which are strategically placed data centers. This minimizes latency and improves the speed at which your content is delivered to end users. By distributing content across multiple edge locations, CloudFront significantly reduces the load on your origin servers, leading to better scalability and performance.
+        </p>
+        
+        <h2>How CloudFront Works with S3</h2>
+        <p>
+            When you host your static website or other content on Amazon S3, you can use CloudFront to enhance the delivery of that content. Here’s how the integration works:
+        </p>
+        <ul>
+            <li>
+                <strong>Content Storage on S3</strong>: First, you store your static assets (like HTML, CSS, JavaScript files, images, videos, etc.) in an S3 bucket. S3 serves as the origin server for your content, providing durable, scalable, and secure storage.
+            </li>
+            <li>
+                <strong>CloudFront Distribution</strong>: You then create a CloudFront distribution that points to your S3 bucket as the origin. CloudFront takes care of fetching the content from S3 and caching it at edge locations.
+            </li>
+            <li>
+                <strong>Request Handling</strong>: When a user requests your content, CloudFront routes the request to the nearest edge location. If the content is already cached there, it’s served directly from the cache, providing low-latency access. If not, CloudFront fetches the content from the S3 origin, caches it at the edge location, and delivers it to the user.
+            </li>
+            <li>
+                <strong>Automatic Updates</strong>: CloudFront also automatically handles updates to your content. When you update files in your S3 bucket, CloudFront can be configured to purge outdated cached content and refresh the cache with the latest version, ensuring users always receive the most up-to-date content.
+            </li>
+        </ul>
+        <p>
+            This integration between CloudFront and S3 not only improves the speed and reliability of content delivery but also reduces costs by minimizing the amount of data transferred from S3, thanks to CloudFront’s caching capabilities. Whether you’re delivering a simple static website or rich media content, using CloudFront with S3 is a powerful way to ensure fast, scalable, and secure content delivery across the globe.
+        </p>
+        <img src="img-N-vid/cloudfront-architecture.png" class="img-center" alt="cloudfront-architecture">
+        <h1>How to Set Up AWS CloudFront and S3 for Static Website Hosting</h1>
+        <p>Are you looking to host a static website without breaking the bank? AWS offers a powerful and cost-effective solution through S3 (Simple Storage Service) and CloudFront, all within its free tier. In this blog post, we'll walk you through the steps to set up a static website using these AWS services, and the best part is that you can do it all for free.</p>
+        
+        <h3>Step 1: Create an S3 Bucket</h3>
+        <p>The first step in hosting your website is to create an S3 bucket where your website files will be stored.</p>
+        <ul>
+            <li>Log in to AWS Management Console:</li>
+            <p>Start by logging in to your AWS account. If you don’t have an account, you can create one on <a href="https://aws.amazon.com/" target="_blank">AWS</a>.</p>
+            <li>Navigate to S3</li>
+            <p>Once logged in, search for "S3" in the services search bar and select it.</p>
+            <li>Create a New Bucket:</li>
+            <p>Click on "Create bucket" and provide a unique name for your bucket. Make sure to select a region close to your target audience for faster loading times.</p>
+            <li>Keep All Settings Default:</li>
+            <p>For this setup, you can keep all the default settings. However, ensure that "Block all public access" is checked, so your bucket is not directly accessible.</p>
+            <li>Enable bucket versioning:</li>
+            <p>Versioning is a means of keeping multiple variants of an object in the same bucket. You can use versioning to preserve, retrieve, and restore every version of every object stored in your Amazon S3 bucket. With versioning, you can easily recover from both unintended user actions and application failures.</p>
+            <p>Keep other settings default and click on "Create bucket" to finalize the setup.</p>
+        </ul>
+        <video src="img-N-vid/bucket-create.mp4" controls class="vid-center">create-bucket</video>
+
+        <h3>Step 2: Upload Your Website Files to the S3 Bucket</h3>
+        <p>With your bucket ready, it’s time to upload your website files and configure the S3 Bucket for Static Website Hosting.</p>
+        <ul>
+            <li>Access Your Bucket:</li>
+            <p>Once your bucket is created, click on it and navigate to the "Upload" section. Here, you can upload all your static files, including HTML, CSS, JavaScript, and images.</p>
+            <p>Storage class: Choose "Standard" for frequently accessed data (more than once a month) with milliseconds access.</p>
+            <p>Go to the "Properties" tab of your S3 bucket and scroll down to the "Static website hosting" section. Enable static website hosting and specify the index document (e.g., index.html) and the error document (e.g., error.html).</p>
+        </ul>
+        <video src="img-N-vid/object-create.mp4" controls class="vid-center">object-create</video>
+
+        <h3>Step 3: Creating a CloudFront Distribution in the AWS Free Tier</h3>
+        <p>
+            Amazon CloudFront is a content delivery network (CDN) service that securely delivers data, videos, applications, and APIs to your viewers with low latency and high transfer speeds. 
+            In this guide, we'll walk you through the steps to create a CloudFront distribution using the AWS free tier. 
+            We'll configure the distribution to work without a custom domain (alternate domain), and accept GET and PUT requests, ensuring that you can deliver content efficiently and securely.
+        </p>
+        
+        <p><strong>Steps to Create CloudFront Distribution</strong></p>
+        <ol>
+            <li>Navigate to the <strong>AWS CloudFront Console</strong>.</li>
+            <li>Create a new distribution by clicking <em>Create Distribution</em>.</li>
+            <li>Select your <strong>Origin</strong> (S3 bucket or HTTP server).</li>
+            <li>Configure the origin with the appropriate settings.</li>
+            <li>Set <strong>Allowed HTTP Methods</strong> to include GET and PUT.</li>
+            <li>Leave the <strong>Alternate Domain Names (CNAMEs)</strong> empty.</li>
+            <li>Use the default CloudFront SSL certificate.</li>
+            <li>Review your settings and create the distribution.</li>
+            <li>Wait for deployment and test using the provided CloudFront URL.</li>
+        </ol>
+        <video src="img-N-vid/cloudfront-create.mp4" controls class="vid-center">cloudfront-create</video>
+
+        <h3>Step 5: Check Your Live Website Using CloudFront Distribution Domain Name</h3>
+        
+    
+        <p><strong>1. Get the CloudFront Distribution Domain Name</strong></p>
+        <p>
+            Follow these steps to retrieve your CloudFront distribution domain name:
+        </p>
+        <ul>
+            <li>Navigate to the <strong>AWS CloudFront Console</strong> in the AWS Management Console.</li>
+            <li>Select your CloudFront distribution from the list.</li>
+            <li>Note the <strong>Domain Name</strong> (e.g., <code>d1abcdefg12345.cloudfront.net</code>) provided by CloudFront.</li>
+        </ul>
+        
+        <h2>2. Access the Website</h2>
+        <p>
+            Once you have the CloudFront domain name, you can access your website as follows:
+        </p>
+        <ul>
+            <li>Open a web browser.</li>
+            <li>Enter the CloudFront distribution domain name into the address bar (e.g., <code>https://d1abcdefg12345.cloudfront.net</code>).</li>
+            <li>Press <strong>Enter</strong> to load the website.</li>
+        </ul>
+        <img src="img-N-vid/Distribution-domain-name.png" class="img-center" alt="Distribution-domain-name">
+        <h2>3. Verify Content Delivery</h2>
+        <p>
+            Ensure that your website content is loading as expected. If everything appears correctly, your CloudFront distribution is functioning properly.
+        </p>
+        
+        <h2>5. Troubleshoot if Needed</h2>
+        <p>
+            If the website does not load, consider the following troubleshooting steps:
+        </p>
+        <ul>
+            <li>Ensure that your S3 bucket permissions are correct.</li>
+            <li>Check that your CloudFront distribution is deployed and the status is <strong>Enabled</strong>.</li>
+            <li>Review any error messages that appear in the browser or via the HTTP tools.</li>
+        </ul>
+        
+        <h2>6. Configuring a Custom Error Page in CloudFront (if Access diclined)</h2>
+
+        <p>If your website is not running, you can configure a custom error page in CloudFront. Follow these steps to set up your custom error page, such as an `index.html` file.</p>
+    
+        <p><strong>Steps to Configure Custom Error Page</strong></p>
+        <ol>
+            <li>
+                <strong>Navigate to CloudFront Console:</strong>
+                <ul>
+                    <li>Go to the <a href="https://console.aws.amazon.com/cloudfront" target="_blank">AWS CloudFront Console</a> and select your CloudFront distribution.</li>
+                </ul>
+            </li>
+    
+            <li>
+                <strong>Edit Distribution Settings:</strong>
+                <ul>
+                    <li>Click on the <strong>Distribution Settings</strong> button.</li>
+                </ul>
+            </li>
+        </ol>
+        <img src="img-N-vid/cloudfront-editing-page.png" class="img-center" alt="page1">
+        <ol start="3">
+            <li>
+                <strong>Go to Error Pages Tab:</strong>
+                <ul>
+                    <li>In the distribution settings, navigate to the <strong>Error Pages</strong> tab.</li>
+                </ul>
+            </li>
+        </ol>
+        <img src="img-N-vid/cloudfront-error-page.png" class="img-center" alt="page2">
+        <ol start="4">
+            <li>
+                <strong>Create Custom Error Response:</strong>
+                <ul>
+                    <li>Click the <strong>Create Custom Error Response</strong> button.</li>
+                </ul>
+            </li>
+    
+            <li>
+                <strong>Configure Error Response:</strong>
+                <ul>
+                    <li>Set the <strong>HTTP Error Code</strong> (e.g., 403, 404, 500) that you want to handle. (if Access diclined or 403 forbidden shown -- choose 403 forbidden)</li>
+                </ul>
+            </ol>
+            <img src="img-N-vid/edit-error-page1.png" class="img-center" alt="page3">
+                <ul>
+                    <li>Set the <strong>TTL (Time to Live)</strong> to a value like 300 seconds.</li>
+                    <li>In the <strong>Custom Error Response</strong> section, set the <strong>Response Page Path</strong> to the path of your custom error page, such as <code>/index.html</code>.</li>
+                    <li>Set the <strong>HTTP Response Code</strong> to <strong>200</strong> (OK) to ensure that the custom page is served correctly.</li>
+                    
+                </ul>
+            </li>
+            <img src="img-N-vid/edit-error-page2.png" class="img-center" alt="page4">
+            <li>
+                <strong>Save and Deploy:</strong>
+                <ul>
+                    <li>Click <strong>Create</strong> to save your settings.</li>
+                    <li>Wait for CloudFront to deploy the changes. This may take a few minutes.</li>
+                </ul>
+            </li>
+
+    
+    
+
+        <h2 id="contact">Contact Us</h2>
+        <form id="contactForm">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="message">Message</label>
+                <textarea id="message" name="message" rows="5" required></textarea>
+            </div>
+            <input type="submit" value="Send Message">
+        </form>
+    </div>
+
+    <!-- <div class="social-icons">
+        <a href="https://www.linkedin.com/in/mridul-soni" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+        <a href="mailto:yourname@example.com" title="Email"><i class="fas fa-envelope"></i></a>
+        <a href="https://github.com/yourusername" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+    </div> -->
+
+    <script src="scripts.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</body>
+</html>
